@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gelir_gider_app/screens/home_page.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String routeName = '/splash_screen';
