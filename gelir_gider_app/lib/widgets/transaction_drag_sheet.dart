@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert'; 
 
-void showAddTransactionSheet(BuildContext context) {
+void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   bool isExpense = true;
@@ -10,6 +12,27 @@ void showAddTransactionSheet(BuildContext context) {
 
   final List<String> expenseCategories = ['Gıda', 'Kira', 'Eğlence'];
   final List<String> incomeCategories = ['Maaş', 'Bonus', 'Diğer'];
+
+  Future<void> saveTransaction(String title, double amount, String category, DateTime date, bool isExpense) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Daha önce kayıtlı işlemleri al
+    List<String> transactions = prefs.getStringList('transactions') ?? [];
+
+    // Yeni işlemi JSON formatında ekle
+    final newTransaction = {
+      'title': title,
+      'amount': amount,
+      'category': category,
+      'date': DateFormat('dd/MM/yyyy').format(date),
+      'isExpense': isExpense
+    };
+
+    transactions.add(jsonEncode(newTransaction));
+
+    // Güncellenmiş listeyi kaydet
+    await prefs.setStringList('transactions', transactions);
+  }
 
   showModalBottomSheet(
     context: context,
@@ -132,12 +155,31 @@ void showAddTransactionSheet(BuildContext context) {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      print('İşlem Eklendi');
-                      print(titleController.text,);
-                      print(selectedCategory,);
-                      print(selectedDate);
+                    onPressed: () async {
+                      // Kullanıcının girdiği değerleri kaydet
+                      if (titleController.text.isEmpty || amountController.text.isEmpty || selectedCategory == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Lütfen tüm alanları doldurun!')),
+                        );
+                        return;
+                      }
+
+                      await saveTransaction(
+                        titleController.text,
+                        double.parse(amountController.text.replaceAll(',', '.')),
+                        selectedCategory!,
+                        selectedDate,
+                        isExpense,
+                      );
+
+                      Navigator.pop(context); // Modal'ı kapat
+                      
+                      // Ana sayfayı yenile
+                      refreshCallback();
+                      
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('İşlem başarıyla kaydedildi!')),
+                      );
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
