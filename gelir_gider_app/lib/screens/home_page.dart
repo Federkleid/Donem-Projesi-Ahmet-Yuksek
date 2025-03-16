@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gelir_gider_app/widgets/transaction_drag_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -209,9 +210,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           backgroundColor: Colors.green,
                         ),
-                        title: Text('Maaş $gelir'),
+                        title: Text('Maaş'),
                         subtitle: Text('Kategori - 13.03.2025'),
-                        trailing: Text('+ $totalbakiye ₺'),
+                        trailing: Text('+ $gelir ₺',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w700),),
                       ),
                     ),
                   );
@@ -221,7 +222,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => {},
+          onPressed: (){
+            showAddTransactionSheet(context);
+          },
           label: Text('Ekle', style: TextStyle(fontSize: 18)),
           icon: Icon(Icons.add),
         ),
