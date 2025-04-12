@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey,
+                              color: Colors.grey ,
                             ),
                           ),
                           SizedBox(height: 18),
@@ -235,6 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   transactions.isEmpty
                       ? Center(child: Text('Henüz işlem yok'))
                       : ListView.builder(
+                        padding: EdgeInsets.only(bottom: 70),
                         itemCount: transactions.length,
                         itemBuilder: (ctx, index) {
                           final transaction = transactions[index];

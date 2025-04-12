@@ -14,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 4), () {
       Navigator.pushNamed(context, widget.routesName);
     });
   }
@@ -43,6 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 strokeWidth: 5,
               ),
             ),
+            SizedBox(height: 70,),
+            Text('Hoşgeldiniz Ahmet Bey',style: TextStyle(fontWeight: FontWeight.w800),)
           ],
         ),
       ),
