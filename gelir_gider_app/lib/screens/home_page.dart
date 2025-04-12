@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gelir_gider_app/widgets/transaction_drag_sheet.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -12,8 +13,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isDarkMode = true;
+  bool isDarkMode = true;
   List<Map<String, dynamic>> transactions = [];
+  DateTime _selectedMonth = DateTime.now();
 
   @override
   void initState() {
@@ -32,6 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  List<Map<String, dynamic>> _getTransactionsForSelectedMonth() {
+    return transactions.where((transaction) {
+      final transactionDate = DateFormat(
+        'dd/MM/yyyy',
+      ).parse(transaction['date']);
+      return transactionDate.month == _selectedMonth.month &&
+          transactionDate.year == _selectedMonth.year;
+    }).toList();
+  }
+
   Future<void> _deleteTransaction(int index) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> transactionStrings = prefs.getStringList('transactions') ?? [];
@@ -46,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   double _calculateTotalIncome() {
-    return transactions
+    return _getTransactionsForSelectedMonth()
         .where((transaction) => !transaction['isExpense'])
         .fold(
           0.0,
@@ -55,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   double _calculateTotalExpense() {
-    return transactions
+    return _getTransactionsForSelectedMonth()
         .where((transaction) => transaction['isExpense'])
         .fold(
           0.0,
@@ -73,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final monthlyTransactions = _getTransactionsForSelectedMonth();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -87,26 +100,26 @@ class _HomeScreenState extends State<HomeScreen> {
         cardColor: const Color(0xFF1E1E1E),
         dividerColor: Colors.white10,
       ),
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {},
             icon: Icon(Icons.account_circle_rounded, size: 36),
-            color: _isDarkMode ? Colors.white : Colors.black,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
           title: const Text("Ana Sayfa"),
           centerTitle: true,
           actions: [
             IconButton(
               icon: Icon(
-                _isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                isDarkMode ? Icons.light_mode : Icons.dark_mode,
                 size: 36,
-                color: _isDarkMode ? Colors.white : Colors.black,
+                color: isDarkMode ? Colors.white : Colors.black,
               ),
               onPressed: () {
                 setState(() {
-                  _isDarkMode = !_isDarkMode;
+                  isDarkMode = !isDarkMode;
                 });
               },
             ),
@@ -130,18 +143,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        onPressed: () => (),
+                        onPressed: () {
+                          setState(() {
+                            _selectedMonth = DateTime(
+                              _selectedMonth.year,
+                              _selectedMonth.month - 1,
+                            );
+                          });
+                        },
                         icon: Icon(Icons.arrow_back_ios),
                       ),
                       Text(
-                        'Mart',
+                        DateFormat('MMMM yyyy').format(_selectedMonth),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            _selectedMonth = DateTime(
+                              _selectedMonth.year,
+                              _selectedMonth.month + 1,
+                            );
+                          });
+                        },
                         icon: Icon(Icons.arrow_forward_ios),
                       ),
                     ],
@@ -173,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey ,
+                              color: Colors.grey,
                             ),
                           ),
                           SizedBox(height: 18),
@@ -232,13 +259,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child:
-                  transactions.isEmpty
+                  monthlyTransactions.isEmpty
                       ? Center(child: Text('Henüz işlem yok'))
                       : ListView.builder(
                         padding: EdgeInsets.only(bottom: 70),
-                        itemCount: transactions.length,
+                        itemCount: monthlyTransactions.length,
                         itemBuilder: (ctx, index) {
-                          final transaction = transactions[index];
+                          final transaction = monthlyTransactions[index];
                           return Dismissible(
                             key: Key('${index}_${transaction['title']}'),
                             background: Container(
