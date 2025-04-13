@@ -6,6 +6,8 @@ import 'dart:convert';
 void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController customCategoryController = TextEditingController();
+
   bool isExpense = true;
   String? selectedCategory;
   DateTime selectedDate = DateTime.now();
@@ -128,6 +130,16 @@ void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
                     );
                   }).toList(),
                 ),
+                if (selectedCategory == 'Diğer')
+                  SizedBox(height: 16),
+                if (selectedCategory == 'Diğer')
+                  TextField(
+                    controller: customCategoryController,
+                    decoration: InputDecoration(
+                      labelText: 'Kendi kategorinizi yazın',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 SizedBox(height: 16),
                 Row(
                   children: [
@@ -164,10 +176,15 @@ void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
                         return;
                       }
 
+                      String finalCategory = selectedCategory == 'Diğer' &&
+                              customCategoryController.text.isNotEmpty
+                          ? customCategoryController.text
+                          : selectedCategory!;
+
                       await saveTransaction(
                         titleController.text,
                         double.parse(amountController.text.replaceAll(',', '.')),
-                        selectedCategory!,
+                        finalCategory,
                         selectedDate,
                         isExpense,
                       );
