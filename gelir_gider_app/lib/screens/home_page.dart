@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gelir_gider_app/screens/profile_screen.dart';
 import 'package:gelir_gider_app/widgets/transaction_drag_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -104,7 +105,12 @@ class _HomeScreenState extends State<HomeScreen> {
       home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            },
             icon: Icon(Icons.account_circle_rounded, size: 36),
             color: isDarkMode ? Colors.white : Colors.black,
           ),
