@@ -12,7 +12,8 @@ void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
   String? selectedCategory;
   DateTime selectedDate = DateTime.now();
 
-  final List<String> expenseCategories = ['Gıda', 'Kira', 'Eğlence'];
+  // "Diğer" kategorisini giderlere de ekledim
+  final List<String> expenseCategories = ['Gıda', 'Kira', 'Eğlence', 'Diğer'];
   final List<String> incomeCategories = ['Maaş', 'Bonus', 'Diğer'];
 
   Future<void> saveTransaction(String title, double amount, String category, DateTime date, bool isExpense) async {
@@ -120,6 +121,10 @@ void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
                   onChanged: (newValue) {
                     setModalState(() {
                       selectedCategory = newValue;
+                      // Diğer dışında bir kategori seçildiğinde, özel kategori alanını temizle
+                      if (selectedCategory != 'Diğer') {
+                        customCategoryController.clear();
+                      }
                     });
                   },
                   items: (isExpense ? expenseCategories : incomeCategories)
@@ -175,15 +180,35 @@ void showAddTransactionSheet(BuildContext context, Function refreshCallback) {
                         );
                         return;
                       }
+                      
+                      // Özel kategori kontrolü - Diğer seçildiğinde ve özel kategori girildiğinde
+                      String finalCategory;
+                      if (selectedCategory == 'Diğer') {
+                        if (customCategoryController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Lütfen özel kategori adı girin!')),
+                          );
+                          return;
+                        }
+                        finalCategory = customCategoryController.text;
+                      } else {
+                        finalCategory = selectedCategory!;
+                      }
 
-                      String finalCategory = selectedCategory == 'Diğer' &&
-                              customCategoryController.text.isNotEmpty
-                          ? customCategoryController.text
-                          : selectedCategory!;
+                      // Tutar formatını kontrol et
+                      double amount;
+                      try {
+                        amount = double.parse(amountController.text.replaceAll(',', '.'));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Lütfen geçerli bir tutar girin!')),
+                        );
+                        return;
+                      }
 
                       await saveTransaction(
                         titleController.text,
-                        double.parse(amountController.text.replaceAll(',', '.')),
+                        amount,
                         finalCategory,
                         selectedDate,
                         isExpense,

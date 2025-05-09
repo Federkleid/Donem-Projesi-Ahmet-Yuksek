@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^2.1.0
+  image_picker: ^1.1.2
   intl: ^0.20.2
   shared_preferences: ^2.5.2
 
@@ -20,3 +21,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - images/
+    - images/profile.png
+    - images/man.png
+    - images/woman.png
+    - images/boy.png
+    - images/girl.png
+    - images/anonymous.png
+

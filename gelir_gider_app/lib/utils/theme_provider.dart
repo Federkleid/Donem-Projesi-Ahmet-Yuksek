@@ -13,7 +13,7 @@ class ThemeProvider extends InheritedWidget {
 
   static ThemeProvider of(BuildContext context) {
     final result = context.dependOnInheritedWidgetOfExactType<ThemeProvider>();
-    assert(result != null, 'ThemeProvider bulunamadı');
+    assert(result != null, 'ThemeProvider bulunamadı. Ana uygulamada ThemeProvider eklendiğinden emin olun.');
     return result!;
   }
 
@@ -29,7 +29,18 @@ class ThemeProvider extends InheritedWidget {
       brightness: Brightness.light,
       scaffoldBackgroundColor: Colors.grey[100],
       cardColor: Colors.white,
-      
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(25),
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.indigo,
+      ),
     );
   }
   
@@ -40,7 +51,18 @@ class ThemeProvider extends InheritedWidget {
       scaffoldBackgroundColor: const Color(0xFF121212),
       cardColor: const Color(0xFF1E1E1E),
       dividerColor: Colors.white10,
-      
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(25),
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.indigo,
+      ),
     );
   }
 }
